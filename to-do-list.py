@@ -1,4 +1,5 @@
 import sqlite3
+import os
 import PySimpleGUI as sg
 from datetime import date, timedelta
 
@@ -156,6 +157,7 @@ def borrar_seleccionados_no_hechos(window, cursor):
             conn.commit()
     actualizar_ventana(window, cursor, fecha)
 
+
 def recuperar_task(window, cursor):
     selected_indices = window["TASKHECHAS"].get_indexes()
     if len(selected_indices) == 1:
@@ -211,8 +213,19 @@ def check(check_window, cursor):
             crear_task(check_window, cursor)
 
 
-conn = sqlite3.connect("data.db")
-cursor = conn.cursor()
+def crear_tabla(conn):
+    consult = "CREATE TABLE IF NOT EXISTS tasks( id INTEGER PRIMARY KEY AUTOINCREMENT, task TEXT NOT NULL,fecha DATE NOT NULL, hecho BOOLEAN NOT NULL)"
+    cursor.execute(consult)
+
+
+if not os.path.isfile("data.db"):
+    conn = sqlite3.connect("data.db")
+    cursor = conn.cursor()
+    crear_tabla(cursor)
+else:
+    conn = sqlite3.connect("data.db")
+    cursor = conn.cursor()
+
 window = start_window(cursor)
 
 check(window, cursor)
